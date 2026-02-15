@@ -387,21 +387,22 @@ function connectToOpenClaw(
       }
 
       // Handle heartbeat events (proactive agent messages)
-      // Payload: { ts, status, reasonew: "user-facing message", durationMs, hasMedia }
+      // Payload: { ts, status, reason, preview: "user-facing message", durationMs, hasMedia }
+      // status: "ok" (nothing to say), "skipped" (had something but no target), "delivered", etc.
+      // preview: the actual user-facing message text
       if (msg.type === "event" && msg.event === "heartbeat") {
         const p = msg.payload ?? {};
         conn.lastActivityAt = Date.now();
 
-        // The user-facing message is in "reasonew" (OpenClaw's field name)
-        const content = p.reasonew ?? p.reason ?? p.message ?? "";
         const status = p.status ?? "";
+        const preview = p.preview ?? "";
 
-        console.log(`[ConnMgr] Heartbeat: status=${status} content="${String(content).slice(0, 100)}"`);
+        console.log(`[ConnMgr] Heartbeat: status=${status} reason=${p.reason ?? ""} preview="${String(preview).slice(0, 100)}"`);
 
-        // Send to WhatsApp unless heartbeat was silent/ok
-        if (content && status !== "ok") {
+        // Only send if there's an actual message in preview (skip status-only events)
+        if (preview && status !== "ok") {
           console.log(`[ConnMgr] Routing heartbeat to outbound handler for sandbox ${conn.sandboxId}`);
-          handleOutboundMessage(conn.sandboxId, String(content));
+          handleOutboundMessage(conn.sandboxId, String(preview));
         }
         return;
       }
