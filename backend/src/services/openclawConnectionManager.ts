@@ -113,7 +113,7 @@ function connectToOpenClaw(
   attempt: number
 ): Promise<OpenClawConnection> {
   return new Promise((resolve, reject) => {
-    if (attempt > 2) {
+    if (attempt > 3) {
       reject(new Error("Failed to connect to OpenClaw after retries"));
       return;
     }
@@ -263,24 +263,41 @@ function connectToOpenClaw(
           const errCode = (msg.error as any)?.code;
           const requestId = (msg.error as any)?.details?.requestId;
 
-          // NOT_PAIRED: auto-approve
-          if (errCode === "NOT_PAIRED" && requestId && containerId) {
-            console.log(`[ConnMgr] NOT_PAIRED, auto-approving device ${requestId}...`);
+          // NOT_PAIRED: auto-approve by writing directly into paired.json
+          if (errCode === "NOT_PAIRED" && containerId) {
+            console.log(`[ConnMgr] NOT_PAIRED, auto-approving device...`);
             try {
               const container = docker.getContainer(containerId);
+              // Approach: Try moving from pending.json first, then fall back to
+              // direct-inserting our device info into paired.json using the
+              // device key we already have.
+              const deviceKey = getOrCreateDeviceKey(sandboxId);
+              const pubKeyB64 = publicKeyRawBase64Url(deviceKey.publicKeyPem);
               const approveScript = [
                 "sh",
                 "-c",
-                `cd /root/.openclaw/devices && ` +
-                  `node -e "` +
+                `node -e "` +
                   `const fs = require('fs');` +
-                  `const pending = JSON.parse(fs.readFileSync('pending.json','utf8'));` +
-                  `const paired = JSON.parse(fs.readFileSync('paired.json','utf8'));` +
-                  `const rid = '${requestId}';` +
-                  `if (pending[rid]) { paired[rid] = pending[rid]; delete pending[rid]; ` +
-                  `fs.writeFileSync('paired.json', JSON.stringify(paired, null, 2)); ` +
-                  `fs.writeFileSync('pending.json', JSON.stringify(pending, null, 2)); ` +
-                  `console.log('approved'); } else { console.log('not found'); }` +
+                  `const devDir = '/root/.openclaw/devices';` +
+                  `let paired = {}; try { paired = JSON.parse(fs.readFileSync(devDir+'/paired.json','utf8')); } catch {}` +
+                  `let pending = {}; try { pending = JSON.parse(fs.readFileSync(devDir+'/pending.json','utf8')); } catch {}` +
+                  // Try to approve from pending first
+                  `const rid = '${requestId || ""}';` +
+                  `if (rid && pending[rid]) { paired[rid] = pending[rid]; delete pending[rid]; console.log('approved from pending'); }` +
+                  // Also force-add our known device ID directly
+                  `const did = '${deviceKey.deviceId}';` +
+                  `if (!paired[did]) {` +
+                  `  paired[did] = {` +
+                  `    requestId: did, deviceId: did,` +
+                  `    publicKey: '${pubKeyB64}',` +
+                  `    platform: 'linux', clientId: 'cli', clientMode: 'cli',` +
+                  `    role: 'operator', roles: ['operator'],` +
+                  `    scopes: ['operator.read', 'operator.write'],` +
+                  `    remoteIp: '0.0.0.0', silent: false, isRepair: false, ts: Date.now()` +
+                  `  }; console.log('force-added device', did);` +
+                  `}` +
+                  `fs.writeFileSync(devDir+'/paired.json', JSON.stringify(paired, null, 2));` +
+                  `fs.writeFileSync(devDir+'/pending.json', JSON.stringify(pending, null, 2));` +
                   `"`,
               ];
               const exec = await container.exec({
@@ -313,7 +330,7 @@ function connectToOpenClaw(
                       reject(err);
                     }
                   });
-              }, 1500);
+              }, 2000);
             } catch (err: any) {
               console.error(`[ConnMgr] Auto-approve failed:`, err.message);
               if (!settled) {

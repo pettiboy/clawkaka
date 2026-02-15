@@ -9,7 +9,7 @@ if [ -n "$OPENROUTER_API_KEY" ]; then
     --non-interactive --accept-risk --skip-channels --skip-skills --skip-health || true
 fi
 
-# Step 2: Patch gateway settings and model (after onboard, which may reset config)
+# Step 2: Patch gateway settings (after onboard, which may reset config)
 jq --arg t "$OPENCLAW_GATEWAY_TOKEN" \
   '.gateway.auth.token = $t | .gateway.bind = "lan" | .gateway.controlUi.dangerouslyDisableDeviceAuth = true' \
   /root/.openclaw/openclaw.json > /tmp/oc.json && mv /tmp/oc.json /root/.openclaw/openclaw.json
@@ -21,16 +21,32 @@ if [ -f /tmp/openclaw-overlay.json ]; then
     && mv /tmp/oc-merged.json /root/.openclaw/openclaw.json
 fi
 
-# Step 4: Pre-seed device as approved if CLAWKAKA_DEVICE_ID and CLAWKAKA_DEVICE_PUBKEY are set
-if [ -n "$CLAWKAKA_DEVICE_ID" ] && [ -n "$CLAWKAKA_DEVICE_PUBKEY" ]; then
-  mkdir -p /root/.openclaw/devices
-  node -e "
-    const fs = require('fs');
-    const pairedPath = '/root/.openclaw/devices/paired.json';
-    let paired = {};
-    try { paired = JSON.parse(fs.readFileSync(pairedPath, 'utf8')); } catch {}
-    const deviceId = process.env.CLAWKAKA_DEVICE_ID;
-    const publicKey = process.env.CLAWKAKA_DEVICE_PUBKEY;
+# Step 4: Pre-seed ALL devices into paired.json BEFORE starting the gateway.
+#
+# The gateway caches paired.json at startup. Any entry NOT in paired.json at
+# gateway start time will be rejected with "pairing required" and there is no
+# way to hot-reload devices without restarting the gateway.
+#
+# Two devices need pre-approval:
+# 1. The local CLI (identity/device.json) — so the agent can run openclaw cron,
+#    openclaw system event, etc. inside the container
+# 2. The external backend device (CLAWKAKA_DEVICE_ID) — so our Express backend
+#    can connect via WebSocket from the host
+mkdir -p /root/.openclaw/devices
+node -e "
+  const fs = require('fs');
+  const crypto = require('crypto');
+  const pairedPath = '/root/.openclaw/devices/paired.json';
+  let paired = {};
+  try { paired = JSON.parse(fs.readFileSync(pairedPath, 'utf8')); } catch {}
+
+  const ALL_SCOPES = [
+    'operator.read', 'operator.write',
+    'operator.admin', 'operator.approvals', 'operator.pairing'
+  ];
+
+  function addDevice(deviceId, publicKey, label) {
+    if (!deviceId || !publicKey) return;
     paired[deviceId] = {
       requestId: deviceId,
       deviceId: deviceId,
@@ -40,17 +56,43 @@ if [ -n "$CLAWKAKA_DEVICE_ID" ] && [ -n "$CLAWKAKA_DEVICE_PUBKEY" ]; then
       clientMode: 'cli',
       role: 'operator',
       roles: ['operator'],
-      scopes: ['operator.read', 'operator.write'],
+      scopes: ALL_SCOPES,
       remoteIp: '0.0.0.0',
       silent: false,
       isRepair: false,
       ts: Date.now()
     };
-    fs.writeFileSync(pairedPath, JSON.stringify(paired, null, 2));
-    console.log('[entrypoint] Pre-approved device:', deviceId);
-  "
-fi
+    console.log('[entrypoint] Pre-approved ' + label + ': ' + deviceId.slice(0, 16) + '...');
+  }
 
+  // 1. Local CLI device (from identity/device.json created during openclaw onboard)
+  try {
+    const identity = JSON.parse(fs.readFileSync('/root/.openclaw/identity/device.json', 'utf8'));
+    if (identity.publicKeyPem) {
+      const pubKey = crypto.createPublicKey(identity.publicKeyPem);
+      const der = pubKey.export({ type: 'spki', format: 'der' });
+      const raw = der.subarray(der.length - 32);
+      const b64url = raw.toString('base64').replace(/\\+/g, '-').replace(/\\//g, '_').replace(/=+\$/g, '');
+      const deviceId = crypto.createHash('sha256').update(raw).digest('hex');
+      addDevice(deviceId, b64url, 'local CLI');
+    }
+  } catch (err) {
+    console.warn('[entrypoint] WARNING: Could not read identity/device.json:', err.message);
+  }
+
+  // 2. External backend device (passed via env by our Express backend)
+  if (process.env.CLAWKAKA_DEVICE_ID && process.env.CLAWKAKA_DEVICE_PUBKEY) {
+    addDevice(process.env.CLAWKAKA_DEVICE_ID, process.env.CLAWKAKA_DEVICE_PUBKEY, 'backend');
+  }
+
+  fs.writeFileSync(pairedPath, JSON.stringify(paired, null, 2));
+  // Ensure pending.json exists
+  try { fs.readFileSync('/root/.openclaw/devices/pending.json', 'utf8'); } catch {
+    fs.writeFileSync('/root/.openclaw/devices/pending.json', '{}');
+  }
+"
+
+# Step 5: Start gateway — paired.json is ready, both devices pre-approved
 echo "[entrypoint] Starting gateway..."
 export NODE_OPTIONS="--max-old-space-size=1536"
 exec openclaw gateway
