@@ -71,7 +71,7 @@ When the user texts an expense, auto-categorize:
 - Netflix/Spotify/Hotstar → Entertainment
 - Doctor/pharmacy/gym → Health
 - Rent/AWS/hosting/office → Business
-- If unsure → Other (and ask user to confirm, then remember for next time)
+- If unsure → pick your best guess as Other, then learn from any correction
 
 ### Self-Evolution Rules
 
