@@ -32,16 +32,17 @@ router.post("/webhook/voice", async (req: Request, res: Response) => {
   } = req.body as TwilioVoiceWebhook;
 
   console.log(`Call SID: ${CallSid}`);
-  console.log(`From: ${From} (${FromCity}, ${FromState}, ${FromCountry})`);
-  console.log(`To: ${To}`);
+  console.log(`📞 CALLER PHONE NUMBER: ${From}`);
+  console.log(`   Location: ${FromCity}, ${FromState}, ${FromCountry}`);
+  console.log(`To (your Twilio number): ${To}`);
   console.log(`Status: ${CallStatus}`);
   console.log(`Direction: ${Direction}`);
 
-  // Initialize call in storage
+  // Initialize call in storage (caller number is stored in "from")
   await initializeCall(CallSid, From, To, Direction, CallStatus);
 
-  // Generate TwiML response with real-time transcription
-  const twiml = generateRealtimeTranscriptionTwiML(config.baseUrl);
+  // Generate TwiML response with personalized greeting + real-time transcription
+  const twiml = generateRealtimeTranscriptionTwiML(config.baseUrl, config.greetingName);
 
   console.log("Generated TwiML:", twiml);
   console.log("===================\n");
