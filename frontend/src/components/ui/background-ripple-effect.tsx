@@ -72,7 +72,7 @@ const DivGrid = ({
   cols = 30,
   cellSize = 56,
   borderColor = "#3f3f46",
-  fillColor = "rgba(14,165,233,0.3)",
+  fillColor = "rgba(14, 233, 29, 0.3)",
   clickedCell = null,
   onCellClick = () => { },
   interactive = true,
@@ -113,7 +113,7 @@ const DivGrid = ({
           <div
             key={idx}
             className={cn(
-              "cell relative border border-[1px] opacity-90 transition-opacity duration-150 will-change-transform hover:opacity-100 dark:opacity-60 dark:shadow-[0px_0px_40px_1px_var(--cell-shadow-color)_inset]",
+              "cell relative border border-[1px] opacity-90 transition-opacity duration-150 will-change-transform hover:opacity-100 dark:shadow-[0px_0px_40px_1px_var(--cell-shadow-color)_inset]",
               clickedCell && "animate-cell-ripple [animation-fill-mode:none]",
               !interactive && "pointer-events-none",
             )}
