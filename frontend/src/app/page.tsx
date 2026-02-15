@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { MessageCircle, Menu, X, Calendar, Brain, ArrowRight, Check, ChevronRight, User } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 import { FlipWords } from "@/components/ui/flip-words";
 import { BackgroundRippleEffect } from "@/components/ui/background-ripple-effect";
 import { BentoGrid, BentoGridItem } from "@/components/ui/bento-grid";
@@ -18,6 +19,8 @@ import {
   IconClock,
 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
+
+const WHATSAPP_URL = "https://wa.me/917208332129?text=Hi%20ClawKaka!";
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -109,8 +112,11 @@ export default function Home() {
               <a href="#how-it-works" className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors">How it works</a>
               <a href="#testimonials" className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors">Testimonials</a>
               <a href="#pricing" className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors">Pricing</a>
-              <Button className="rounded-full bg-emerald-600 text-white hover:bg-emerald-700" size="default">
-                Get Started
+              <Button className="rounded-full bg-emerald-600 text-white hover:bg-emerald-700" size="default" asChild>
+                <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
+                  <MessageCircle className="mr-1.5 h-4 w-4" />
+                  Try on WhatsApp
+                </a>
               </Button>
             </div>
             <button
@@ -129,8 +135,11 @@ export default function Home() {
               <a href="#how-it-works" className="text-sm text-zinc-600 hover:text-zinc-900 py-2">How it works</a>
               <a href="#testimonials" className="text-sm text-zinc-600 hover:text-zinc-900 py-2">Testimonials</a>
               <a href="#pricing" className="text-sm text-zinc-600 hover:text-zinc-900 py-2">Pricing</a>
-              <Button className="rounded-full bg-emerald-600 text-white hover:bg-emerald-700 mt-2">
-                Get Started
+              <Button className="rounded-full bg-emerald-600 text-white hover:bg-emerald-700 mt-2" asChild>
+                <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
+                  <MessageCircle className="mr-1.5 h-4 w-4" />
+                  Try on WhatsApp
+                </a>
               </Button>
             </div>
           </div>
@@ -143,7 +152,7 @@ export default function Home() {
         <div className="relative z-10 w-full max-w-5xl mx-auto text-center">
           <Badge variant="outline" className="mb-8 border-emerald-300 bg-emerald-50 text-emerald-700 px-4 py-1.5">
             <span className="mr-2 h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Your PA on WhatsApp
+            Made in India, for India 🇮🇳
           </Badge>
           <h1 className="text-5xl font-bold tracking-tight sm:text-7xl md:text-8xl mb-6">
             <span className="text-zinc-900">Never forget to </span>
@@ -151,12 +160,13 @@ export default function Home() {
             <FlipWords words={flipWords} className="inline-block text-5xl sm:text-7xl md:text-8xl text-zinc-900" />
           </h1>
           <p className="mx-auto max-w-2xl text-lg text-zinc-600 sm:text-xl mb-10">
-            Your personal assistant that lives in WhatsApp. It remembers, reminds, and tracks — accessible to anyone who can type a message.
+            India&apos;s personal assistant that lives in WhatsApp. It remembers, reminds, and tracks — in English, Hindi, or Hinglish. Accessible to every Indian who can type a message.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
-            <Button size="lg" className="rounded-full bg-zinc-900 text-white hover:bg-zinc-800 px-8" asChild>
-              <a href="#pricing">
-                Start Free Trial
+            <Button size="lg" className="rounded-full bg-emerald-600 text-white hover:bg-emerald-700 px-8" asChild>
+              <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
+                <MessageCircle className="mr-2 h-5 w-5" />
+                Message on WhatsApp
                 <ArrowRight className="ml-2 h-4 w-4" />
               </a>
             </Button>
@@ -164,12 +174,15 @@ export default function Home() {
               variant="outline"
               size="lg"
               className="rounded-full border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-50"
+              asChild
             >
-              Watch Demo
+              <a href="#how-it-works">
+                See How It Works
+              </a>
             </Button>
           </div>
           <p className="text-sm text-zinc-500">
-            No credit card required · 7-day free trial · Works on any device
+            No app download · No signup · Just WhatsApp · Works on any phone
           </p>
         </div>
 
@@ -225,7 +238,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
             {[
-              { value: String(testimonials.length), label: "Testimonials", color: "text-emerald-600" },
+              { value: "🇮🇳", label: "Built for Bharat", color: "text-emerald-600" },
               { value: "24/7", label: "Always Available", color: "text-violet-600" },
               { value: "₹499", label: "Per Month", color: "text-amber-600" },
               { value: "100%", label: "On WhatsApp", color: "text-rose-600" },
@@ -249,7 +262,7 @@ export default function Home() {
               One PA, adapts to anyone
             </h2>
             <p className="mx-auto max-w-2xl text-lg text-zinc-600">
-              Whether you're a corporate worker or a business owner, Clawkaka adapts to your life.
+              Whether you&apos;re a corporate professional in Bangalore or a shop owner in Jaipur, Clawkaka adapts to your life.
             </p>
           </div>
           <BentoGrid className="max-w-6xl mx-auto gap-6 md:auto-rows-[22rem]">
@@ -306,10 +319,10 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold tracking-tight text-zinc-900 sm:text-5xl md:text-6xl mb-4">
-              Built for real life
+              Built for Bharat
             </h2>
             <p className="mx-auto max-w-2xl text-lg text-zinc-600">
-              From corporate workers to business owners, Clawkaka adapts to your lifestyle.
+              From IT professionals in Pune to kirana store owners in Lucknow — Clawkaka works the way India works.
             </p>
           </div>
           <div className="grid gap-6 md:grid-cols-2">
@@ -429,9 +442,12 @@ export default function Home() {
                   </div>
                 ))}
                 <Button size="lg" className="mt-4 w-full rounded-full bg-emerald-600 text-white hover:bg-emerald-700" asChild>
-                  <a href="#">Start Free Trial</a>
+                  <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
+                    <MessageCircle className="mr-2 h-5 w-5" />
+                    Start on WhatsApp
+                  </a>
                 </Button>
-                <p className="text-center text-sm text-zinc-500">No credit card required · 7-day free trial</p>
+                <p className="text-center text-sm text-zinc-500">No app download · No signup · 7-day free trial</p>
               </CardContent>
             </Card>
           </div>
@@ -440,27 +456,50 @@ export default function Home() {
 
       {/* CTA */}
       <section className="py-24 px-6 border-t border-zinc-200">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl font-bold tracking-tight text-zinc-900 sm:text-6xl md:text-7xl mb-6">
-            Ready to never forget again?
-          </h2>
-          <p className="mx-auto max-w-xl text-lg text-zinc-600 mb-10">
-            Join thousands who've made Clawkaka their personal assistant. Zero app download. Zero training. Just WhatsApp.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button size="lg" className="rounded-full bg-zinc-900 text-white hover:bg-zinc-800 px-8" asChild>
-              <a href="#pricing">
-                Get Started Free
-                <ChevronRight className="ml-2 h-5 w-5" />
-              </a>
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="rounded-full border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-50"
-            >
-              Schedule Demo
-            </Button>
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold tracking-tight text-zinc-900 sm:text-6xl md:text-7xl mb-6">
+              Ready to never forget again?
+            </h2>
+            <p className="mx-auto max-w-xl text-lg text-zinc-600">
+              Join Indians who&apos;ve made Clawkaka their personal assistant. No app download. No signup. Just WhatsApp.
+            </p>
+          </div>
+
+          <div className="flex flex-col md:flex-row items-center justify-center gap-12 md:gap-16">
+            {/* QR Code */}
+            <div className="flex flex-col items-center gap-4">
+              <div className="rounded-2xl border-2 border-emerald-200 bg-white p-5 shadow-lg">
+                <QRCodeSVG
+                  value={WHATSAPP_URL}
+                  size={200}
+                  level="H"
+                  fgColor="#059669"
+                  imageSettings={{
+                    src: "",
+                    height: 0,
+                    width: 0,
+                    excavate: false,
+                  }}
+                />
+              </div>
+              <p className="text-sm font-medium text-zinc-600">Scan to chat on WhatsApp</p>
+            </div>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-col items-center gap-6">
+              <p className="text-zinc-500 text-sm font-medium uppercase tracking-wider">Or tap the button</p>
+              <Button size="lg" className="rounded-full bg-emerald-600 text-white hover:bg-emerald-700 px-10 py-6 text-lg" asChild>
+                <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
+                  <MessageCircle className="mr-2 h-5 w-5" />
+                  Message on WhatsApp
+                  <ChevronRight className="ml-2 h-5 w-5" />
+                </a>
+              </Button>
+              <p className="text-sm text-zinc-500 text-center max-w-xs">
+                Works in English, Hindi, and Hinglish. Built for every Indian.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -476,7 +515,7 @@ export default function Home() {
                 </div>
                 <span className="text-lg font-bold text-zinc-900">Clawkaka</span>
               </div>
-              <p className="text-sm text-zinc-600">Your personal assistant on WhatsApp.</p>
+              <p className="text-sm text-zinc-600">India&apos;s personal assistant on WhatsApp.</p>
             </div>
             <div>
               <h4 className="font-semibold text-zinc-900 mb-4">Product</h4>
@@ -504,7 +543,7 @@ export default function Home() {
             </div>
           </div>
           <div className="border-t border-zinc-200 pt-8 text-center text-sm text-zinc-500">
-            © 2026 Clawkaka. Built for Build India Hackathon.
+            © 2026 Clawkaka. Proudly built in India 🇮🇳
           </div>
         </div>
       </footer>

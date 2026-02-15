@@ -23,7 +23,7 @@ model Sandbox {
   port              Int
   status            String    @default("pending")
   errorMessage      String?
-  model             String    @default("moonshotai/kimi-k2.5")
+  model             String    @default("anthropic/claude-opus-4.6")
   openrouterKeyHash String?
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
