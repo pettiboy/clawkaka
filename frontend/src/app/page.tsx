@@ -148,7 +148,7 @@ export default function Home() {
           <h1 className="text-5xl font-bold tracking-tight sm:text-7xl md:text-8xl mb-6">
             <span className="text-zinc-900">Never forget to </span>
             <br />
-            <FlipWords words={flipWords} className="inline-block" />
+            <FlipWords words={flipWords} className="inline-block text-5xl sm:text-7xl md:text-8xl text-zinc-900" />
           </h1>
           <p className="mx-auto max-w-2xl text-lg text-zinc-600 sm:text-xl mb-10">
             Your personal assistant that lives in WhatsApp. It remembers, reminds, and tracks — accessible to anyone who can type a message.

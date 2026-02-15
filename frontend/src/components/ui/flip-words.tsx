@@ -57,9 +57,9 @@ export const FlipWords = ({
           position: "absolute",
         }}
         className={cn(
-          "z-10 inline-block relative text-left px-2",
+          "z-10 inline-block relative text-left px-2 font-bold tracking-tight",
+          "text-zinc-900 dark:text-zinc-100 [text-shadow:0_0_1px_rgba(0,0,0,0.1)]",
           className,
-          "text-zinc-900 dark:text-zinc-100"
         )}
         key={currentWord}
       >
@@ -67,24 +67,24 @@ export const FlipWords = ({
         {currentWord.split(" ").map((word, wordIndex) => (
           <motion.span
             key={word + wordIndex}
-            initial={{ opacity: 0, y: 10, filter: "blur(8px)" }}
+            initial={{ opacity: 0.3, y: 6, filter: "blur(4px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             transition={{
-              delay: wordIndex * 0.3,
-              duration: 0.3,
+              delay: wordIndex * 0.2,
+              duration: 0.35,
             }}
-            className="inline-block whitespace-nowrap [color:inherit]"
+            className="inline-block whitespace-nowrap text-inherit font-inherit"
           >
             {word.split("").map((letter, letterIndex) => (
               <motion.span
                 key={word + letterIndex}
-                initial={{ opacity: 0, y: 10, filter: "blur(8px)" }}
+                initial={{ opacity: 0.4, y: 6, filter: "blur(4px)" }}
                 animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 transition={{
-                  delay: wordIndex * 0.3 + letterIndex * 0.05,
-                  duration: 0.2,
+                  delay: wordIndex * 0.2 + letterIndex * 0.04,
+                  duration: 0.25,
                 }}
-                className="inline-block [color:inherit]"
+                className="inline-block text-inherit font-inherit"
               >
                 {letter}
               </motion.span>
