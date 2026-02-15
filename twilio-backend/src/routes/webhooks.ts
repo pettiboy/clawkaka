@@ -32,17 +32,20 @@ router.post("/webhook/voice", async (req: Request, res: Response) => {
   } = req.body as TwilioVoiceWebhook;
 
   console.log(`Call SID: ${CallSid}`);
-  console.log(`From: ${From} (${FromCity}, ${FromState}, ${FromCountry})`);
-  console.log(`To: ${To}`);
+  console.log(`📞 CALLER PHONE NUMBER: ${From}`);
+  console.log(`   Location: ${FromCity}, ${FromState}, ${FromCountry}`);
+  console.log(`To (your Twilio number): ${To}`);
   console.log(`Status: ${CallStatus}`);
   console.log(`Direction: ${Direction}`);
 
-  // Initialize call in storage
+  // Initialize call in storage (caller number is stored in "from")
   await initializeCall(CallSid, From, To, Direction, CallStatus);
 
-  // Generate TwiML response with real-time transcription
-  const twiml = generateRealtimeTranscriptionTwiML(config.baseUrl);
+  // Generate TwiML response with personalized greeting + real-time transcription
+  const twiml = generateRealtimeTranscriptionTwiML(config.baseUrl, config.greetingName);
 
+  console.log("Transcription callback URL (must be reachable by Twilio):", `${config.baseUrl}/webhook/realtime-transcription`);
+  console.log("Recording transcription callback:", `${config.baseUrl}/webhook/transcription`);
   console.log("Generated TwiML:", twiml);
   console.log("===================\n");
 
@@ -50,21 +53,20 @@ router.post("/webhook/voice", async (req: Request, res: Response) => {
   res.send(twiml);
 });
 
-// Real-time transcription webhook
+// Real-time transcription webhook (streaming segments; Twilio POSTs here as user speaks)
 router.post(
   "/webhook/realtime-transcription",
   async (req: Request, res: Response) => {
-    console.log("\n=== Real-Time Transcription ===");
+    console.log("\n=== Real-Time Transcription (streaming) ===");
     console.log("Request body:", req.body);
 
-    const {
-      CallSid,
-      TranscriptionSid,
-      TranscriptionText,
-      TranscriptionStatus,
-      Confidence,
-      Track,
-    } = req.body;
+    const body = req.body as Record<string, any>;
+    const CallSid = body.CallSid;
+    const TranscriptionSid = body.TranscriptionSid ?? body.transcription_sid;
+    const TranscriptionText = body.TranscriptionText ?? body.TranscriptionText ?? body.transcription_text ?? "";
+    const TranscriptionStatus = body.TranscriptionStatus ?? body.transcription_status;
+    const Confidence = body.Confidence ?? body.confidence;
+    const Track = body.Track ?? body.track;
 
     console.log(`Call SID: ${CallSid}`);
     console.log(`Transcription SID: ${TranscriptionSid}`);
@@ -91,18 +93,17 @@ router.post(
   }
 );
 
-// Recording transcription webhook (backup method)
+// Recording transcription webhook (runs when recording finishes – main way to see what user said)
 router.post("/webhook/transcription", async (req: Request, res: Response) => {
-  console.log("\n=== Recording Transcription ===");
+  console.log("\n=== Recording Transcription (full transcript) ===");
   console.log("Request body:", req.body);
 
-  const {
-    CallSid,
-    TranscriptionSid,
-    TranscriptionText,
-    TranscriptionStatus,
-    RecordingSid,
-  } = req.body;
+  const body = req.body as Record<string, any>;
+  const CallSid = body.CallSid;
+  const TranscriptionSid = body.TranscriptionSid ?? body.transcription_sid;
+  const TranscriptionText = body.TranscriptionText ?? body.TranscriptionText ?? body.transcription_text ?? "";
+  const TranscriptionStatus = body.TranscriptionStatus ?? body.transcription_status;
+  const RecordingSid = body.RecordingSid ?? body.recording_sid;
 
   console.log(`Call SID: ${CallSid}`);
   console.log(`Recording SID: ${RecordingSid}`);
@@ -120,6 +121,9 @@ router.post("/webhook/transcription", async (req: Request, res: Response) => {
     };
 
     await addTranscription(CallSid, transcription);
+    console.log(">>> SAVED TRANSCRIPT:", TranscriptionText);
+  } else {
+    console.log("(No transcript text in this callback)");
   }
 
   console.log("===============================\n");

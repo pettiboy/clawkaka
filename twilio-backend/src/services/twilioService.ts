@@ -10,29 +10,39 @@ export const twilioClient = twilio(
 );
 
 // Generate TwiML with real-time streaming transcription
-export function generateRealtimeTranscriptionTwiML(baseUrl: string): string {
+export function generateRealtimeTranscriptionTwiML(
+  baseUrl: string,
+  greetingName?: string
+): string {
   const twiml = new VoiceResponse();
+  const name = greetingName && greetingName.trim() ? greetingName.trim() : "there";
 
-  // Greet the caller
+  // Greet the caller (e.g. "Hi Soham! This call will be transcribed...")
   twiml.say(
     {
       voice: "Polly.Joanna",
       language: "en-US",
     },
-    "Hello! This call will be transcribed in real-time. Please speak now."
+    `Hi ${name}! This call will be transcribed in real-time. Please speak now.`
   );
 
-  // Start real-time transcription using the new TwiML
+  // Real-time transcription (streaming callbacks)
+  const transcriptionCallbackUrl = `${baseUrl}/webhook/realtime-transcription`;
   const start = twiml.start();
   start.transcription({
     name: "Real-time Call Transcription",
-    track: "both_tracks", // Transcribe both caller and system
-    statusCallbackUrl: `${baseUrl}/webhook/realtime-transcription`,
+    track: "inbound_track",
+    statusCallbackUrl: transcriptionCallbackUrl,
     languageCode: "en-US",
   });
 
-  // Keep the call open for a long time to allow speaking
-  twiml.pause({ length: 300 }); // 5 minutes
+  // Record with transcription as fallback (you get full transcript when call ends)
+  twiml.record({
+    maxLength: 120,
+    transcribe: true,
+    transcribeCallback: `${baseUrl}/webhook/transcription`,
+    playBeep: false,
+  });
 
   // Say goodbye
   twiml.say("Thank you for calling. Your conversation has been transcribed. Goodbye!");

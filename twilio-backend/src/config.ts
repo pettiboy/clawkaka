@@ -12,6 +12,7 @@ export const config = {
     apiKeySecret: process.env.TWILIO_API_KEY_SECRET!,
   },
   baseUrl: process.env.BASE_URL || "http://localhost:3001",
+  greetingName: process.env.GREETING_NAME || "there",
 };
 
 // Validate required environment variables

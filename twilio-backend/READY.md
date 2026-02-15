@@ -15,6 +15,11 @@
 https://a1c6-14-143-179-90.ngrok-free.app/webhook/voice
 ```
 
+## RUN NGROK
+```
+ngrok 
+```
+
 ---
 
 ## 📝 Configure Twilio:
