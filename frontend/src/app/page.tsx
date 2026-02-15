@@ -4,7 +4,6 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { MessageCircle, Menu, X, Calendar, Brain, ArrowRight, Check, ChevronRight, User, Quote, Clock, IndianRupee, Smartphone } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
-import { FlipWords } from "@/components/ui/flip-words";
 import { BackgroundRippleEffect } from "@/components/ui/background-ripple-effect";
 import { BentoGrid, BentoGridItem } from "@/components/ui/bento-grid";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,7 +23,6 @@ const WHATSAPP_URL = "https://wa.me/917208332129?text=Hi%20ClawKaka!";
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const flipWords = ["remember", "organize", "track", "simplify"];
 
   const testimonials = [
     {
@@ -161,8 +159,8 @@ export default function Home() {
             Made in India, for India 🇮🇳
           </Badge>
           <h1 className="text-5xl font-bold tracking-tight sm:text-7xl md:text-8xl mb-6">
-            <span className="text-zinc-800">Never forget to <FlipWords words={flipWords} className="inline-block text-5xl sm:text-7xl md:text-8xl text-emerald-600" />
-            </span>
+            <span className="text-zinc-800">Never forget to </span>
+            <span className="text-emerald-600">remember.</span>
             <br />
           </h1>
           <p className="mx-auto max-w-2xl text-lg text-zinc-600 sm:text-xl mb-10">
