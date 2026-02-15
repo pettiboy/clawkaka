@@ -118,3 +118,10 @@ clawkaka/
 5. Agent processes the message, logs data to its SQLite DB, and responds
 6. Backend sends the response back to WhatsApp via Meta API
 7. Agent's heartbeat checks in every 30 min and proactively messages the user if needed
+
+## ON prod
+
+```zsh
+pm2 start "npm run dev" --name backend
+pm2 start "npm run start" --name frontend
+```
