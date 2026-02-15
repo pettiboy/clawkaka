@@ -1,0 +1,527 @@
+'use client';
+
+import { useState } from 'react';
+import Image from 'next/image';
+import { MessageCircle, Menu, X, Calendar, Brain, ArrowRight, Check, ChevronRight, User } from 'lucide-react';
+import { FlipWords } from "@/components/ui/flip-words";
+import { BackgroundRippleEffect } from "@/components/ui/background-ripple-effect";
+import { BentoGrid, BentoGridItem } from "@/components/ui/bento-grid";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Marquee } from "@/components/ui/marquee";
+import {
+  IconCalendar,
+  IconChartBar,
+  IconBrain,
+  IconLanguage,
+  IconClock,
+} from "@tabler/icons-react";
+import { cn } from "@/lib/utils";
+
+export default function Home() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const flipWords = ["remember", "organize", "track", "simplify"];
+
+  const testimonials = [
+    {
+      quote: "Clawkaka changed how I manage my daily tasks. No more forgotten meetings or missed deadlines. It's like having a personal assistant that actually understands me.",
+      name: "Priya Sharma",
+      designation: "Product Manager, Flipkart",
+      src: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=400&h=400&fit=crop",
+    },
+    {
+      quote: "As a business owner, tracking expenses was always a headache. Clawkaka makes it effortless. Just text the amount and it's done. The monthly reports are incredibly helpful.",
+      name: "Rajesh Kumar",
+      designation: "Owner, Kumar Electronics",
+      src: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&h=400&fit=crop",
+    },
+    {
+      quote: "I love that it speaks Hindi! My parents can now use it without any tech knowledge. It's truly built for India.",
+      name: "Anita Desai",
+      designation: "Software Engineer, Google",
+      src: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=400&h=400&fit=crop",
+    },
+  ];
+
+  const featureImages = [
+    "https://images.unsplash.com/photo-1506784365847-bbad939e9335?w=600&h=400&fit=crop",
+    "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&h=400&fit=crop",
+    "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&h=400&fit=crop",
+    "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=600&h=400&fit=crop",
+    "https://images.unsplash.com/photo-1521587765099-8835e7201186?w=600&h=400&fit=crop",
+    "https://images.unsplash.com/photo-1501139083538-013e3ba0b5a5?w=600&h=400&fit=crop",
+  ];
+
+  const features = [
+    {
+      title: "Smart Reminders",
+      description: "Context-aware reminders that understand your schedule and priorities. Never miss what matters.",
+      header: <FeatureImage src={featureImages[0]} alt="Calendar and schedule" />,
+      icon: <IconCalendar className="h-4 w-4 text-emerald-600" />,
+    },
+    {
+      title: "Calorie Tracking",
+      description: "Simple food logging with automatic calorie estimation. Set goals and track progress effortlessly.",
+      header: <FeatureImage src={featureImages[1]} alt="Healthy food and nutrition" />,
+      icon: <IconChartBar className="h-4 w-4 text-violet-600" />,
+    },
+    {
+      title: "Expense Management",
+      description: "Text amounts, get automatic categorization. Monthly breakdowns and spending insights.",
+      header: <FeatureImage src={featureImages[2]} alt="Expense tracking" />,
+      icon: <IconChartBar className="h-4 w-4 text-amber-600" />,
+    },
+    {
+      title: "Self-Evolving Memory",
+      description: "Learns your patterns and adapts over time. The more you use it, the smarter it gets.",
+      header: <FeatureImage src={featureImages[3]} alt="AI and memory" />,
+      icon: <IconBrain className="h-4 w-4 text-rose-600" />,
+    },
+    {
+      title: "Multi-Language Support",
+      description: "Speak in English, Hindi, or Hinglish. Adapts to your communication style naturally.",
+      header: <FeatureImage src={featureImages[4]} alt="Languages and communication" />,
+      icon: <IconLanguage className="h-4 w-4 text-cyan-600" />,
+    },
+    {
+      title: "24/7 Availability",
+      description: "Always there when you need it. Proactive check-ins and timely nudges throughout your day.",
+      header: <FeatureImage src={featureImages[5]} alt="Always available" />,
+      icon: <IconClock className="h-4 w-4 text-indigo-600" />,
+    },
+  ];
+
+  return (
+    <div className="min-h-screen bg-white text-zinc-900">
+      {/* Nav */}
+      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-zinc-200 bg-white/95 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-600">
+                <MessageCircle className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-xl font-bold text-zinc-900">Clawkaka</span>
+            </div>
+            <div className="hidden md:flex items-center gap-8">
+              <a href="#features" className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors">Features</a>
+              <a href="#how-it-works" className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors">How it works</a>
+              <a href="#testimonials" className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors">Testimonials</a>
+              <a href="#pricing" className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors">Pricing</a>
+              <Button className="rounded-full bg-emerald-600 text-white hover:bg-emerald-700" size="default">
+                Get Started
+              </Button>
+            </div>
+            <button
+              className="md:hidden text-zinc-600"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Menu"
+            >
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </div>
+        </div>
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-zinc-200 bg-white">
+            <div className="flex flex-col gap-2 px-6 py-4">
+              <a href="#features" className="text-sm text-zinc-600 hover:text-zinc-900 py-2">Features</a>
+              <a href="#how-it-works" className="text-sm text-zinc-600 hover:text-zinc-900 py-2">How it works</a>
+              <a href="#testimonials" className="text-sm text-zinc-600 hover:text-zinc-900 py-2">Testimonials</a>
+              <a href="#pricing" className="text-sm text-zinc-600 hover:text-zinc-900 py-2">Pricing</a>
+              <Button className="rounded-full bg-emerald-600 text-white hover:bg-emerald-700 mt-2">
+                Get Started
+              </Button>
+            </div>
+          </div>
+        )}
+      </nav>
+
+      {/* Hero */}
+      <section className="relative min-h-[90vh] flex flex-col items-center justify-center overflow-hidden px-6 pt-28 pb-20">
+        <BackgroundRippleEffect />
+        <div className="relative z-10 w-full max-w-5xl mx-auto text-center">
+          <Badge variant="outline" className="mb-8 border-emerald-300 bg-emerald-50 text-emerald-700 px-4 py-1.5">
+            <span className="mr-2 h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            Your PA on WhatsApp
+          </Badge>
+          <h1 className="text-5xl font-bold tracking-tight sm:text-7xl md:text-8xl mb-6">
+            <span className="text-zinc-900">Never forget to </span>
+            <br />
+            <FlipWords words={flipWords} className="inline-block text-5xl sm:text-7xl md:text-8xl text-zinc-900" />
+          </h1>
+          <p className="mx-auto max-w-2xl text-lg text-zinc-600 sm:text-xl mb-10">
+            Your personal assistant that lives in WhatsApp. It remembers, reminds, and tracks — accessible to anyone who can type a message.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
+            <Button size="lg" className="rounded-full bg-zinc-900 text-white hover:bg-zinc-800 px-8" asChild>
+              <a href="#pricing">
+                Start Free Trial
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </a>
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="rounded-full border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-50"
+            >
+              Watch Demo
+            </Button>
+          </div>
+          <p className="text-sm text-zinc-500">
+            No credit card required · 7-day free trial · Works on any device
+          </p>
+        </div>
+
+        {/* Hero – ChatGPT-style conversation preview */}
+        <div className="relative z-10 mt-16 w-full max-w-4xl mx-auto">
+          <div className="relative overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-xl">
+            <div className="border-b border-zinc-200 px-4 py-3 flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-100">
+                <MessageCircle className="h-4 w-4 text-emerald-600" />
+              </div>
+              <span className="text-sm font-medium text-zinc-700">Clawkaka</span>
+            </div>
+            <div className="min-h-[400px] divide-y divide-zinc-100">
+              {[
+                { role: "user" as const, text: "Remind me to send the proposal to Mehta by Friday" },
+                { role: "assistant" as const, text: "Got it! I'll remind you before Friday to send the proposal to Mehta. I've added it to your tasks." },
+                { role: "user" as const, text: "Had 2 rotis, dal, and sabzi for lunch" },
+                { role: "assistant" as const, text: "Logged ~450 cal. You have 1,550 cal left for today based on your 2,000 cal goal." },
+                { role: "user" as const, text: "Spent 450 at Starbucks" },
+                { role: "assistant" as const, text: "Tracked ₹450 under Food & Beverage. Total spending today: ₹450." },
+              ].map((msg, i) => (
+                <div
+                  key={i}
+                  className={cn(
+                    "flex gap-4 px-6 py-4",
+                    msg.role === "user" ? "bg-zinc-50" : "bg-white"
+                  )}
+                >
+                  {msg.role === "assistant" ? (
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-100">
+                      <MessageCircle className="h-4 w-4 text-emerald-600" />
+                    </div>
+                  ) : (
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-zinc-200">
+                      <User className="h-4 w-4 text-zinc-500" />
+                    </div>
+                  )}
+                  <div className="min-w-0 flex-1 pt-0.5">
+                    <p className="text-sm font-medium text-zinc-500 mb-0.5">
+                      {msg.role === "user" ? "You" : "Clawkaka"}
+                    </p>
+                    <p className="text-sm text-zinc-800 leading-relaxed">{msg.text}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats */}
+      <section className="border-y border-zinc-200 bg-zinc-50 py-16 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
+            {[
+              { value: String(testimonials.length), label: "Testimonials", color: "text-emerald-600" },
+              { value: "24/7", label: "Always Available", color: "text-violet-600" },
+              { value: "₹499", label: "Per Month", color: "text-amber-600" },
+              { value: "100%", label: "On WhatsApp", color: "text-rose-600" },
+            ].map((stat, i) => (
+              <Card key={i} className="border-zinc-200 bg-white transition-shadow hover:shadow-md">
+                <CardContent className="p-6 text-center">
+                  <div className={cn("text-4xl font-bold md:text-5xl", stat.color)}>{stat.value}</div>
+                  <div className="mt-1 text-sm font-medium text-zinc-600">{stat.label}</div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features */}
+      <section id="features" className="py-24 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold tracking-tight text-zinc-900 sm:text-5xl md:text-6xl mb-4">
+              One PA, adapts to anyone
+            </h2>
+            <p className="mx-auto max-w-2xl text-lg text-zinc-600">
+              Whether you're a corporate worker or a business owner, Clawkaka adapts to your life.
+            </p>
+          </div>
+          <BentoGrid className="max-w-6xl mx-auto gap-6 md:auto-rows-[22rem]">
+            {features.map((item, i) => (
+              <BentoGridItem
+                key={i}
+                title={item.title}
+                description={item.description}
+                header={item.header}
+                icon={item.icon}
+                className="border-zinc-200 bg-white overflow-hidden hover:border-zinc-300 hover:shadow-lg transition-all"
+              />
+            ))}
+          </BentoGrid>
+        </div>
+      </section>
+
+      {/* How it works */}
+      <section id="how-it-works" className="py-24 px-6 border-t border-zinc-200 bg-zinc-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold tracking-tight text-zinc-900 sm:text-5xl md:text-6xl mb-4">
+              From message to memory
+            </h2>
+            <p className="mx-auto max-w-2xl text-lg text-zinc-600">
+              Three simple steps: capture, remind, and track. Everything happens through natural conversation.
+            </p>
+          </div>
+          <div className="grid gap-6 md:grid-cols-3">
+            {[
+              { step: "01", title: "Just tell me anything", desc: "No forms. No buttons. Message like you're talking to a friend. Natural language in English, Hindi, or Hinglish.", icon: MessageCircle, iconBg: "bg-emerald-600", iconColor: "text-white" },
+              { step: "02", title: "I remember everything", desc: "Context-aware reminders that adapt to your schedule. Proactive nudges before you forget.", icon: Calendar, iconBg: "bg-cyan-600", iconColor: "text-white" },
+              { step: "03", title: "Patterns emerge", desc: "Track calories, expenses, or anything you need. Automatic categorization and weekly summaries.", icon: Brain, iconBg: "bg-violet-600", iconColor: "text-white" },
+            ].map((item, i) => (
+              <Card key={i} className="border-zinc-200 bg-white transition-shadow hover:shadow-md">
+                <CardHeader>
+                  <div className={cn("mb-4 flex h-12 w-12 items-center justify-center rounded-xl", item.iconBg, item.iconColor)}>
+                    <item.icon className="h-6 w-6" />
+                  </div>
+                  <Badge variant="outline" className="w-fit border-zinc-300 bg-zinc-50 text-zinc-600">
+                    STEP {item.step}
+                  </Badge>
+                  <CardTitle className="text-xl text-zinc-900">{item.title}</CardTitle>
+                  <CardDescription className="text-zinc-600">{item.desc}</CardDescription>
+                </CardHeader>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Use cases */}
+      <section className="py-24 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold tracking-tight text-zinc-900 sm:text-5xl md:text-6xl mb-4">
+              Built for real life
+            </h2>
+            <p className="mx-auto max-w-2xl text-lg text-zinc-600">
+              From corporate workers to business owners, Clawkaka adapts to your lifestyle.
+            </p>
+          </div>
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card className="overflow-hidden border-zinc-200 bg-white hover:border-zinc-300 transition-colors">
+              <CardHeader>
+                <Badge className="w-fit bg-emerald-100 text-emerald-800 border-emerald-200">For Professionals</Badge>
+                <CardTitle className="text-2xl text-zinc-900">Corporate Worker</CardTitle>
+                <CardContent className="px-0 pt-2">
+                  <ul className="space-y-3">
+                    {["Track work tasks and meeting reminders", "Monitor daily calorie intake and health goals", "Manage personal expenses and subscriptions", "Get weekly summaries and monthly reports"].map((t, i) => (
+                      <li key={i} className="flex items-center gap-3 text-zinc-600">
+                        <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100">
+                          <Check className="h-3 w-3 text-emerald-600" />
+                        </div>
+                        {t}
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </CardHeader>
+            </Card>
+            <Card className="overflow-hidden border-zinc-200 bg-white hover:border-zinc-300 transition-colors">
+              <CardHeader>
+                <Badge className="w-fit bg-cyan-100 text-cyan-800 border-cyan-200">For Business</Badge>
+                <CardTitle className="text-2xl text-zinc-900">SME Owner</CardTitle>
+                <CardContent className="px-0 pt-2">
+                  <ul className="space-y-3">
+                    {["Track receivables and payables from clients", "Maintain contact ledgers automatically", "Business expense categorization and tracking", "Hindi/Hinglish support for local businesses"].map((t, i) => (
+                      <li key={i} className="flex items-center gap-3 text-zinc-600">
+                        <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-cyan-100">
+                          <Check className="h-3 w-3 text-cyan-600" />
+                        </div>
+                        {t}
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </CardHeader>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section id="testimonials" className="py-24 px-6 border-t border-zinc-200 bg-zinc-50 overflow-hidden">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold tracking-tight text-zinc-900 sm:text-5xl md:text-6xl mb-4">
+              Loved by thousands
+            </h2>
+            <p className="mx-auto max-w-2xl text-lg text-zinc-600">
+              See what our users have to say about their experience with Clawkaka.
+            </p>
+          </div>
+          <Marquee speed={40} pauseOnHover>
+            {testimonials.map((t, i) => (
+              <div
+                key={i}
+                className="flex w-[340px] shrink-0 flex-col rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm"
+              >
+                <div className="flex items-center gap-4 mb-4">
+                  <Image
+                    src={t.src}
+                    alt={t.name}
+                    width={48}
+                    height={48}
+                    className="h-12 w-12 rounded-full object-cover ring-2 ring-zinc-100"
+                  />
+                  <div>
+                    <p className="font-semibold text-zinc-900">{t.name}</p>
+                    <p className="text-xs text-zinc-500">{t.designation}</p>
+                  </div>
+                </div>
+                <p className="text-sm text-zinc-600 leading-relaxed line-clamp-4">&ldquo;{t.quote}&rdquo;</p>
+              </div>
+            ))}
+          </Marquee>
+        </div>
+      </section>
+
+      {/* Pricing */}
+      <section id="pricing" className="py-24 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold tracking-tight text-zinc-900 sm:text-5xl md:text-6xl mb-4">
+              Simple, transparent pricing
+            </h2>
+            <p className="mx-auto max-w-2xl text-lg text-zinc-600">
+              One price. All features. No hidden costs.
+            </p>
+          </div>
+          <div className="mx-auto max-w-md">
+            <Card className="relative overflow-hidden rounded-3xl border-2 border-emerald-200 bg-white shadow-lg">
+              <Badge className="absolute right-6 top-6 rounded-full bg-emerald-600 text-white">Best Value</Badge>
+              <CardHeader className="pb-4">
+                <CardTitle className="text-2xl text-zinc-900">Personal Assistant</CardTitle>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-5xl font-bold text-emerald-600">₹499</span>
+                  <span className="text-zinc-600">/month</span>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4 pb-8">
+                {[
+                  "Unlimited messages and reminders",
+                  "Calorie and expense tracking",
+                  "Proactive reminders and nudges",
+                  "Weekly and monthly summaries",
+                  "Multi-language support",
+                  "Web dashboard access",
+                  "24/7 availability",
+                ].map((f, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100">
+                      <Check className="h-3 w-3 text-emerald-600" />
+                    </div>
+                    <span className="text-zinc-700">{f}</span>
+                  </div>
+                ))}
+                <Button size="lg" className="mt-4 w-full rounded-full bg-emerald-600 text-white hover:bg-emerald-700" asChild>
+                  <a href="#">Start Free Trial</a>
+                </Button>
+                <p className="text-center text-sm text-zinc-500">No credit card required · 7-day free trial</p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="py-24 px-6 border-t border-zinc-200">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-4xl font-bold tracking-tight text-zinc-900 sm:text-6xl md:text-7xl mb-6">
+            Ready to never forget again?
+          </h2>
+          <p className="mx-auto max-w-xl text-lg text-zinc-600 mb-10">
+            Join thousands who've made Clawkaka their personal assistant. Zero app download. Zero training. Just WhatsApp.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Button size="lg" className="rounded-full bg-zinc-900 text-white hover:bg-zinc-800 px-8" asChild>
+              <a href="#pricing">
+                Get Started Free
+                <ChevronRight className="ml-2 h-5 w-5" />
+              </a>
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="rounded-full border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-50"
+            >
+              Schedule Demo
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-zinc-200 py-12 px-6 bg-zinc-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid gap-8 md:grid-cols-4 mb-12">
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-600">
+                  <MessageCircle className="h-5 w-5 text-white" />
+                </div>
+                <span className="text-lg font-bold text-zinc-900">Clawkaka</span>
+              </div>
+              <p className="text-sm text-zinc-600">Your personal assistant on WhatsApp.</p>
+            </div>
+            <div>
+              <h4 className="font-semibold text-zinc-900 mb-4">Product</h4>
+              <ul className="space-y-2 text-sm text-zinc-600">
+                <li><a href="#features" className="hover:text-zinc-900 transition-colors">Features</a></li>
+                <li><a href="#pricing" className="hover:text-zinc-900 transition-colors">Pricing</a></li>
+                <li><a href="#" className="hover:text-zinc-900 transition-colors">FAQ</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold text-zinc-900 mb-4">Company</h4>
+              <ul className="space-y-2 text-sm text-zinc-600">
+                <li><a href="#" className="hover:text-zinc-900 transition-colors">About</a></li>
+                <li><a href="#" className="hover:text-zinc-900 transition-colors">Blog</a></li>
+                <li><a href="#" className="hover:text-zinc-900 transition-colors">Careers</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold text-zinc-900 mb-4">Legal</h4>
+              <ul className="space-y-2 text-sm text-zinc-600">
+                <li><a href="#" className="hover:text-zinc-900 transition-colors">Privacy</a></li>
+                <li><a href="#" className="hover:text-zinc-900 transition-colors">Terms</a></li>
+                <li><a href="#" className="hover:text-zinc-900 transition-colors">Security</a></li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-zinc-200 pt-8 text-center text-sm text-zinc-500">
+            © 2026 Clawkaka. Built for Build India Hackathon.
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+function FeatureImage({ src, alt }: { src: string; alt: string }) {
+  return (
+    <div className="relative h-36 w-full overflow-hidden rounded-t-xl bg-zinc-100">
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        className="object-cover object-center"
+        sizes="(max-width: 768px) 100vw, 33vw"
+      />
+    </div>
+  );
+}

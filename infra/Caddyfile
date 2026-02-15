@@ -1,23 +1,7 @@
-# Clawkaka reverse proxy
-# Replace clawkaka.yourdomain.com with your actual domain
-# Caddy auto-provisions HTTPS via Let's Encrypt
+clawkaka.com {
+	reverse_proxy 172.26.1.248:3000
+}
 
-clawkaka.yourdomain.com {
-	# WhatsApp webhook + backend API
-	handle /whatsapp/* {
-		reverse_proxy host.docker.internal:3001
-	}
-
-	handle /sandbox/* {
-		reverse_proxy host.docker.internal:3001
-	}
-
-	handle /health {
-		reverse_proxy host.docker.internal:3001
-	}
-
-	# Default: backend
-	handle {
-		reverse_proxy host.docker.internal:3001
-	}
+api.clawkaka.com {
+	reverse_proxy 172.26.1.248:3001
 }
