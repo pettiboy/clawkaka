@@ -13,11 +13,13 @@
     "dependencies": {
         "@prisma/adapter-pg": "^7.4.0",
         "@prisma/client": "^7.4.0",
+        "body-parser": "^1.20.3",
         "cors": "^2.8.5",
         "dockerode": "^4.0.9",
         "dotenv": "^16.4.7",
         "express": "^4.21.2",
         "pg": "^8.18.0",
+        "twilio": "^5.4.0",
         "ws": "^8.19.0"
     },
     "devDependencies": {

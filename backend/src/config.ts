@@ -24,4 +24,12 @@ export const config = {
   whatsappAccessToken: optional("WHATSAPP_ACCESS_TOKEN", ""),
   whatsappPhoneNumberId: optional("WHATSAPP_SENDER_PHONE_NUMBER_ID", ""),
   whatsappApiBaseUrl: optional("WHATSAPP_API_BASE_URL", "https://graph.facebook.com"),
+  twilio: {
+    accountSid: optional("TWILIO_ACCOUNT_SID", ""),
+    authToken: optional("TWILIO_AUTH_TOKEN", ""),
+    phoneNumber: optional("TWILIO_PHONE_NUMBER", ""),
+    apiKeySid: optional("TWILIO_API_KEY_SID", ""),
+    apiKeySecret: optional("TWILIO_API_KEY_SECRET", ""),
+  },
+  baseUrl: optional("BASE_URL", "http://localhost:3000"),
 };
