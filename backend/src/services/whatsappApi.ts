@@ -28,11 +28,21 @@ export async function sendWhatsAppMessage(to: string, body: string): Promise<voi
   });
 }
 
+/**
+ * Send typing indicator ("typing...") to the user.
+ * This also marks the message as read. Typing indicator lasts up to 25 seconds
+ * or until a response is sent, whichever comes first.
+ */
 export async function sendTypingIndicator(to: string, messageId: string): Promise<void> {
   await postToWhatsApp({
     messaging_product: "whatsapp",
+    recipient_type: "individual",
+    to,
     status: "read",
     message_id: messageId,
+    typing_indicator: {
+      type: "text",
+    },
   });
 }
 

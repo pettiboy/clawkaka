@@ -6,6 +6,7 @@ import {
   signChallenge,
   publicKeyRawBase64Url,
 } from "./deviceAttestation.js";
+import { handleOutboundMessage } from "./outboundHandler.js";
 const docker = new Docker({ socketPath: "/var/run/docker.sock" });
 
 interface OpenClawConnection {
@@ -165,9 +166,12 @@ function connectToOpenClaw(
         return;
       }
 
-      if (msg.event !== "agent" && msg.event !== "health") {
+      if (msg.event !== "agent" && msg.event !== "health" && msg.event !== "tick") {
+        const extra = (msg.event === "cron" || msg.event === "heartbeat")
+          ? ` payload=${JSON.stringify(msg.payload ?? {}).slice(0, 300)}`
+          : "";
         console.log(
-          `[ConnMgr] ← OpenClaw: type=${msg.type} event=${msg.event || ""} id=${msg.id || ""} ok=${msg.ok ?? ""}`
+          `[ConnMgr] ← OpenClaw: type=${msg.type} event=${msg.event || ""} id=${msg.id || ""} ok=${msg.ok ?? ""}${extra}`
         );
       }
 
@@ -355,7 +359,7 @@ function connectToOpenClaw(
         return;
       }
 
-      // Handle chat events
+      // Handle chat events (user-initiated responses)
       if (msg.type === "event" && msg.event === "chat") {
         const p = msg.payload;
         if (!p) return;
@@ -372,11 +376,53 @@ function connectToOpenClaw(
           // If there's a per-request callback, use it; otherwise route to outbound handler
           if (conn.onChatFinal) {
             conn.onChatFinal(content, p.runId);
-          } else if (conn.onOutboundMessage && content) {
-            conn.onOutboundMessage(content);
+          } else if (content) {
+            console.log(`[ConnMgr] Chat final (no callback) → outbound for sandbox ${conn.sandboxId}`);
+            handleOutboundMessage(conn.sandboxId, content);
           }
         } else if (p.state === "error") {
           conn.onChatError?.(content || "OpenClaw error");
+        }
+        return;
+      }
+
+      // Handle heartbeat events (proactive agent messages)
+      // Payload: { ts, status, reasonew: "user-facing message", durationMs, hasMedia }
+      if (msg.type === "event" && msg.event === "heartbeat") {
+        const p = msg.payload ?? {};
+        conn.lastActivityAt = Date.now();
+
+        // The user-facing message is in "reasonew" (OpenClaw's field name)
+        const content = p.reasonew ?? p.reason ?? p.message ?? "";
+        const status = p.status ?? "";
+
+        console.log(`[ConnMgr] Heartbeat: status=${status} content="${String(content).slice(0, 100)}"`);
+
+        // Send to WhatsApp unless heartbeat was silent/ok
+        if (content && status !== "ok") {
+          console.log(`[ConnMgr] Routing heartbeat to outbound handler for sandbox ${conn.sandboxId}`);
+          handleOutboundMessage(conn.sandboxId, String(content));
+        }
+        return;
+      }
+
+      // Handle cron events (scheduled agent messages)
+      // Actions: added, started, finished, removed
+      // On "finished": { action, status, summary: "user-facing message", jobId, durationMs }
+      if (msg.type === "event" && msg.event === "cron") {
+        const p = msg.payload ?? {};
+        conn.lastActivityAt = Date.now();
+
+        const action = p.action ?? "";
+        const jobId = p.jobId ?? "";
+        const summary = p.summary ?? "";
+
+        console.log(`[ConnMgr] Cron: action=${action} jobId=${jobId.slice(0, 8)} summary="${summary.slice(0, 100)}"`);
+
+        // Only send message on "finished" with a summary
+        if (action === "finished" && summary) {
+          console.log(`[ConnMgr] Routing cron summary to outbound handler for sandbox ${conn.sandboxId}`);
+          handleOutboundMessage(conn.sandboxId, summary);
         }
         return;
       }
