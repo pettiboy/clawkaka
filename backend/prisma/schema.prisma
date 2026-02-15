@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  phone     String   @unique
+  name      String?
+  sandbox   Sandbox?
+  createdAt DateTime @default(now())
+}
+
+model Sandbox {
+  id                String    @id @default(cuid())
+  userId            String    @unique
+  user              User      @relation(fields: [userId], references: [id])
+  containerId       String?
+  port              Int
+  status            String    @default("pending")
+  errorMessage      String?
+  model             String    @default("moonshotai/kimi-k2.5")
+  openrouterKeyHash String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  messages          Message[]
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  sandboxId String
+  sandbox   Sandbox  @relation(fields: [sandboxId], references: [id], onDelete: Cascade)
+  role      String
+  content   String
+  status    String   @default("sent")
+  source    String   @default("whatsapp")
+  runId     String?
+  createdAt DateTime @default(now())
+}
