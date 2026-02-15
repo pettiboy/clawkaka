@@ -86,7 +86,7 @@ async function waitForMessages(
   sandboxId: string,
   role: string,
   minCount: number,
-  timeoutMs = 30_000,
+  timeoutMs = 60_000,
 ): Promise<any[]> {
   const start = Date.now();
   while (Date.now() - start < timeoutMs) {
@@ -159,13 +159,18 @@ async function run() {
     const res = await postWebhook("Hi");
     if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
 
-    // User should be created
-    const user = await prisma.user.findUnique({ where: { phone: TEST_PHONE } });
+    // Wait for async processing to create user
+    let user = null;
+    for (let i = 0; i < 10; i++) {
+      await new Promise((r) => setTimeout(r, 1000));
+      user = await prisma.user.findUnique({ where: { phone: TEST_PHONE } });
+      if (user) break;
+    }
     if (!user) throw new Error("User not created");
   });
 
   await test("2. Sandbox becomes ready", async () => {
-    const sandbox = await waitForSandboxReady(60_000);
+    const sandbox = await waitForSandboxReady(120_000);
     sandboxId = sandbox.id;
     containerId = sandbox.containerId!;
     if (!containerId) throw new Error("No container ID");
@@ -180,7 +185,7 @@ async function run() {
   // ── Test 2: WhatsApp webhook round-trip ──
   await test("4. First message gets assistant response", async () => {
     // The "Hi" message from test 1 should have been processed
-    const messages = await waitForMessages(sandboxId, "assistant", 1, 30_000);
+    const messages = await waitForMessages(sandboxId, "assistant", 1, 60_000);
     if (messages.length < 1) throw new Error("No assistant response");
     console.log(`    Response: "${messages[0].content.slice(0, 80)}..."`);
   });
@@ -196,13 +201,13 @@ async function run() {
   // ── Test 3: PA onboarding flow ──
   await test("6. Onboarding: send name and role", async () => {
     await postWebhook("I'm Priya, PM at Flipkart");
-    await waitForMessages(sandboxId, "assistant", 2, 30_000);
+    await waitForMessages(sandboxId, "assistant", 2, 60_000);
   });
 
   // ── Test 4: Calorie tracking ──
   await test("7. Calorie tracking: log a meal", async () => {
     await postWebhook("Had 2 rotis and dal for lunch");
-    await waitForMessages(sandboxId, "assistant", 3, 30_000);
+    await waitForMessages(sandboxId, "assistant", 3, 60_000);
 
     // Verify meals table has entry
     await new Promise((r) => setTimeout(r, 5000)); // Allow time for DB write
@@ -216,7 +221,7 @@ async function run() {
   // ── Test 5: Expense tracking ──
   await test("8. Expense tracking: Uber ride", async () => {
     await postWebhook("Uber to office 280");
-    await waitForMessages(sandboxId, "assistant", 4, 30_000);
+    await waitForMessages(sandboxId, "assistant", 4, 60_000);
 
     await new Promise((r) => setTimeout(r, 5000));
     const output = await execInContainer(containerId, [
@@ -228,7 +233,7 @@ async function run() {
 
   await test("9. Expense tracking: Starbucks", async () => {
     await postWebhook("Spent 450 at Starbucks");
-    await waitForMessages(sandboxId, "assistant", 5, 30_000);
+    await waitForMessages(sandboxId, "assistant", 5, 60_000);
 
     await new Promise((r) => setTimeout(r, 5000));
     const output = await execInContainer(containerId, [

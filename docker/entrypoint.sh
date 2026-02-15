@@ -52,4 +52,5 @@ if [ -n "$CLAWKAKA_DEVICE_ID" ] && [ -n "$CLAWKAKA_DEVICE_PUBKEY" ]; then
 fi
 
 echo "[entrypoint] Starting gateway..."
+export NODE_OPTIONS="--max-old-space-size=1536"
 exec openclaw gateway

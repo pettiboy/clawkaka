@@ -30,7 +30,7 @@ export async function createContainer(
           { HostPort: String(hostPort) },
         ],
       },
-      Memory: 512 * 1024 * 1024, // 512MB
+      Memory: 2048 * 1024 * 1024, // 2GB
       NanoCpus: 1_000_000_000, // 1 CPU
     },
     Env: env,
