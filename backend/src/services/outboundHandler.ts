@@ -1,7 +1,5 @@
-import { PrismaClient } from "@prisma/client";
 import { sendLongMessage } from "./whatsappApi.js";
-
-const prisma = new PrismaClient();
+import { prisma } from "../lib/prisma.js";
 
 /**
  * Handles outbound messages from OpenClaw heartbeat/cron that need to reach WhatsApp.

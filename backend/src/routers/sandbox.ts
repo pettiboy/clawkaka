@@ -1,11 +1,9 @@
 import { Router } from "express";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../lib/prisma.js";
 import {
   getSandboxStatus,
   teardownSandbox,
 } from "../services/sandbox.js";
-
-const prisma = new PrismaClient();
 export const sandboxRouter = Router();
 
 // GET /sandbox/status/:phone — Get sandbox status by phone number

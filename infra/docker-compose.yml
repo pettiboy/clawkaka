@@ -1,0 +1,35 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: clawkaka-postgres
+    environment:
+      POSTGRES_USER: clawkaka
+      POSTGRES_PASSWORD: clawkaka
+      POSTGRES_DB: clawkaka
+    ports:
+      - "5468:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U clawkaka"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  caddy:
+    image: caddy:2
+    container_name: clawkaka-caddy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:

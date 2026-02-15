@@ -1,5 +1,5 @@
-import { PrismaClient } from "@prisma/client";
 import { provisionSandbox } from "./sandbox.js";
+import { prisma } from "../lib/prisma.js";
 import {
   sendWhatsAppMessage,
   sendTypingIndicator,
@@ -11,8 +11,6 @@ import {
   setCallbacks,
   sendChatMessage,
 } from "./openclawConnectionManager.js";
-
-const prisma = new PrismaClient();
 
 interface QueueEntry {
   text: string;

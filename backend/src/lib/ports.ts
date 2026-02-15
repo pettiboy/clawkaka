@@ -1,8 +1,6 @@
-import { PrismaClient } from "@prisma/client";
 import net from "net";
 import { config } from "../config.js";
-
-const prisma = new PrismaClient();
+import { prisma } from "./prisma.js";
 
 async function isPortAvailable(port: number): Promise<boolean> {
   return new Promise((resolve) => {

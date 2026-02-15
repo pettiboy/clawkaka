@@ -1,13 +1,11 @@
-import { PrismaClient } from "@prisma/client";
 import { allocatePort } from "../lib/ports.js";
+import { prisma } from "../lib/prisma.js";
 import { createContainer, removeContainer } from "./docker.js";
 import { getOrCreateDeviceKey, publicKeyRawBase64Url } from "./deviceAttestation.js";
 import { provisionOpenRouterKey, deleteOpenRouterKey } from "./openrouterKeys.js";
 import { removeConnection, getOrCreateConnection, setOutboundCallback } from "./openclawConnectionManager.js";
 import { handleOutboundMessage } from "./outboundHandler.js";
 import WebSocket from "ws";
-
-const prisma = new PrismaClient();
 
 /** Wait for the OpenClaw gateway WS to accept connections. */
 async function waitForGateway(port: number, timeoutMs = 60_000): Promise<void> {

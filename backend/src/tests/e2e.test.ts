@@ -8,11 +8,9 @@
  * Run: npm run test:e2e
  */
 
-import { PrismaClient } from "@prisma/client";
 import Docker from "dockerode";
 import { config } from "../config.js";
-
-const prisma = new PrismaClient();
+import { prisma } from "../lib/prisma.js";
 const docker = new Docker({ socketPath: "/var/run/docker.sock" });
 
 const TEST_PHONE = "919999999999";
