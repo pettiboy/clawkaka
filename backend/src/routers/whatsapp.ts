@@ -32,6 +32,15 @@ whatsappRouter.post("/webhook", (req, res) => {
     for (const entry of body.entry) {
       if (!entry.changes) continue;
       for (const change of entry.changes) {
+        // Only accept messages sent to our configured WhatsApp number
+        const recipientPhoneId = change.value?.metadata?.phone_number_id;
+        if (recipientPhoneId !== config.whatsappPhoneNumberId) {
+          console.warn(
+            `[WhatsApp] Ignoring message for phone_number_id=${recipientPhoneId} (expected ${config.whatsappPhoneNumberId})`
+          );
+          continue;
+        }
+
         const messages = change.value?.messages;
         if (!messages) continue;
 
@@ -42,7 +51,9 @@ whatsappRouter.post("/webhook", (req, res) => {
           const text = message.text.body;
           const waMessageId = message.id;
 
-          console.log(`[WhatsApp] Incoming from ${phone}: "${text.slice(0, 50)}"`);
+          console.log(
+            `[WhatsApp] Incoming from ${phone}: "${text.slice(0, 50)}"`
+          );
 
           handleIncomingMessage(phone, text, waMessageId).catch((err) => {
             console.error(`[WhatsApp] handleIncomingMessage error:`, err);
