@@ -3,7 +3,8 @@
     "version": "1.0.0",
     "type": "module",
     "scripts": {
-        "dev": "tsx src/server.ts"
+        "dev": "tsx src/server.ts",
+        "test:e2e": "tsx src/tests/e2e.test.ts"
     },
     "dependencies": {
         "@prisma/client": "^6.19.2",

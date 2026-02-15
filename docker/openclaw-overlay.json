@@ -1,0 +1,16 @@
+{
+  "agents": {
+    "defaults": {
+      "heartbeat": {
+        "every": "30m",
+        "target": "last",
+        "model": "google/gemini-2.5-flash",
+        "activeHours": {
+          "start": "07:00",
+          "end": "23:00",
+          "timezone": "Asia/Kolkata"
+        }
+      }
+    }
+  }
+}
