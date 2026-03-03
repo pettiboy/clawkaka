@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { MessageCircle, Menu, X, Calendar, Brain, ArrowRight, Check, ChevronRight, User, Quote, Clock, IndianRupee, Smartphone } from 'lucide-react';
+import { MessageCircle, Menu, X, Calendar, Brain, ArrowRight, Check, ChevronRight, User, Clock, IndianRupee, Smartphone } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { BackgroundRippleEffect } from "@/components/ui/background-ripple-effect";
 import { BentoGrid, BentoGridItem } from "@/components/ui/bento-grid";

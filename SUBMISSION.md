@@ -19,7 +19,7 @@ Text it like a friend, it handles the rest:
 
 No onboarding. No category pickers. It just _does the thing_.
 
-**Core capabilities:** Task & reminder management · Expense tracking with auto-categorization · Calorie logging (calibrated for Indian food) · Contact ledger for SMEs · Proactive check-ins (morning briefings, deadline alerts, meal nudges) · Voice calls (speak naturally, get WhatsApp summary) · Hindi/Hinglish support · Self-evolving database schema.
+**Core capabilities:** Task & reminder management · Expense tracking with auto-categorization · Calorie logging (calibrated for Indian food) · Contact ledger for SMEs · Proactive check-ins (morning briefings, deadline alerts, meal nudges) · Hindi/Hinglish support · Self-evolving database schema.
 
 **Who it's for:** Corporate professionals tracking tasks/calories/expenses, and SME owners managing receivables in Hindi - no app literacy required.
 
@@ -48,7 +48,6 @@ A heartbeat runs every 30 minutes (7 AM–11 PM IST) checking for overdue tasks,
 | **Per-user sandbox** | Docker + SQLite + OpenClaw agent                                                      |
 | **LLM**              | OpenRouter - Antropic: Claude Opus 4.6 (chat), Antropic: Claude Haiku 4.5 (heartbeat) |
 | **Messaging**        | Meta WhatsApp Business API                                                            |
-| **Voice**            | Twilio (recording + transcription + TTS)                                              |
 | **Infra**            | Caddy (HTTPS), PM2, Ed25519 device auth                                               |
 
 ---

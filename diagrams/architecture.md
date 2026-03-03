@@ -7,7 +7,6 @@ graph TB
     subgraph External["External Services"]
         User["User"]
         MetaAPI["Meta WhatsApp Business API"]
-        TwilioAPI["Twilio Voice API"]
         OpenRouterAPI["OpenRouter API (LLM Provider)"]
     end
 
@@ -20,16 +19,13 @@ graph TB
 
         subgraph Routes["Routes"]
             WAWebhook["WhatsApp Webhook GET/POST /whatsapp/webhook"]
-            VoiceWebhook["Voice Webhooks POST /voice/webhook/*"]
             SandboxRoute["Sandbox Admin /sandbox/*"]
         end
 
         subgraph Services["Services"]
             WAHandler["whatsappHandler (per-user queue)"]
-            VoiceHandler["voiceHandler (TwiML + transcription)"]
             OutboundHandler["outboundHandler (heartbeat → WhatsApp)"]
             WAApiClient["whatsappApi (Meta API client)"]
-            TwilioSvc["twilioService (TwiML generation)"]
             ConnMgr["openclawConnectionManager (WebSocket pool)"]
             SandboxSvc["sandboxService (provision / teardown)"]
             DockerSvc["dockerService (Dockerode)"]
@@ -49,24 +45,17 @@ graph TB
 
     %% ── User channels ──
     User -->|"WhatsApp message"| MetaAPI
-    User -->|"Phone call"| TwilioAPI
 
     %% ── Inbound to backend ──
     MetaAPI -->|"webhook POST"| Caddy
-    TwilioAPI -->|"webhook POST"| Caddy
     Caddy --> WAWebhook
-    Caddy --> VoiceWebhook
 
     %% ── Route → Service ──
     WAWebhook --> WAHandler
-    VoiceWebhook --> VoiceHandler
 
     %% ── Handler flows ──
     WAHandler --> ConnMgr
     WAHandler --> SandboxSvc
-    VoiceHandler --> ConnMgr
-    VoiceHandler --> SandboxSvc
-    VoiceHandler --> TwilioSvc
 
     %% ── Sandbox provisioning ──
     SandboxSvc --> DockerSvc
@@ -87,9 +76,6 @@ graph TB
     WAApiClient -->|"send message"| MetaAPI
     MetaAPI -->|"deliver"| User
 
-    TwilioSvc -->|"TwiML response"| TwilioAPI
-    TwilioAPI -->|"speak / call"| User
-
     %% ── Sandbox internals ──
     OpenClaw --> SQLite
     OpenClaw --> Workspace
@@ -105,9 +91,9 @@ graph TB
     classDef db fill:#fce7f3,stroke:#db2777,stroke-width:2px,color:#1e1e1e
     classDef sandbox fill:#d1fae5,stroke:#059669,stroke-width:2px,color:#1e1e1e
 
-    class User,MetaAPI,TwilioAPI,OpenRouterAPI external
+    class User,MetaAPI,OpenRouterAPI external
     class Caddy infra
-    class WAWebhook,VoiceWebhook,SandboxRoute,WAHandler,VoiceHandler,OutboundHandler,WAApiClient,TwilioSvc,ConnMgr,SandboxSvc,DockerSvc,ORKeys,DeviceAttest backend
+    class WAWebhook,SandboxRoute,WAHandler,OutboundHandler,WAApiClient,ConnMgr,SandboxSvc,DockerSvc,ORKeys,DeviceAttest backend
     class Postgres,SQLite db
     class OpenClaw,Workspace sandbox
 ```
@@ -144,42 +130,6 @@ sequenceDiagram
     OC-->>CM: WebSocket: response
     CM->>Meta: Send reply via API
     Meta->>User: Deliver WhatsApp message
-```
-
-## Voice Call Flow
-
-```mermaid
-sequenceDiagram
-    actor User
-    participant Twilio as Twilio Voice API
-    participant VH as voiceHandler
-    participant SS as sandboxService
-    participant CM as connectionManager
-    participant OC as OpenClaw Agent
-    participant WA as whatsappApi
-
-    User->>Twilio: Phone call
-    Twilio->>VH: POST /voice/webhook/voice
-    VH-->>Twilio: TwiML (greeting + record)
-
-    Twilio->>User: Play greeting
-    User->>Twilio: Speak message
-    Twilio->>VH: POST /voice/webhook/transcription
-    VH->>CM: Send transcript to agent
-    CM->>OC: WebSocket: voice message
-    OC-->>CM: WebSocket: response
-    CM-->>Twilio: TwiML <Say> response
-    Twilio->>User: Speak response
-
-    User->>Twilio: Hang up
-    Twilio->>VH: POST /voice/webhook/call-status
-    VH->>OC: Notify call ended
-
-    opt Follow-up summary
-        OC->>CM: Send summary
-        CM->>WA: Send via WhatsApp
-        WA->>User: WhatsApp follow-up
-    end
 ```
 
 ## Sandbox Container Architecture
